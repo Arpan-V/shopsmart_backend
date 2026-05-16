@@ -3,6 +3,7 @@ package com.arpan.backend.config;
 import com.arpan.backend.filter.JwtFilter;
 import lombok.RequiredArgsConstructor;
 import org.jspecify.annotations.NonNull;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -33,6 +34,9 @@ public class SecurityConfig {
     private final JwtFilter jwtFilter;
 
     private final OAuth2SuccessHandler oAuth2SuccessHandler;
+
+    @Value("${app.frontend-url}")
+    private String frontendUrl;
 
     @Bean
     public SecurityFilterChain securityFilterChain(
@@ -146,6 +150,7 @@ public class SecurityConfig {
     @Bean
     public WebMvcConfigurer corsConfigurer() {
 
+
         return new WebMvcConfigurer() {
 
             @Override
@@ -156,8 +161,7 @@ public class SecurityConfig {
                 registry.addMapping("/**")
 
                         .allowedOrigins(
-                                "http://localhost:3000"
-//                                "https://av-shopsmart.vercel.app/"
+                                frontendUrl
                         )
 
                         .allowedMethods(
