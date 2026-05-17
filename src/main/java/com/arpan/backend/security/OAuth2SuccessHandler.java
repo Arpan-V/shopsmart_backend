@@ -128,8 +128,7 @@ public class OAuth2SuccessHandler
                 refreshCookie.toString()
         );
 
-        response.sendRedirect(frontendUrl);
-    }
+        response.sendRedirect(frontendUrl + "/oauth-success");    }
 
     private String generateUniqueUsername(String base) {
 
