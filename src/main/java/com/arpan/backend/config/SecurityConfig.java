@@ -1,7 +1,6 @@
 package com.arpan.backend.config;
 
 import com.arpan.backend.filter.JwtFilter;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.jspecify.annotations.NonNull;
 import org.springframework.beans.factory.annotation.Value;
@@ -113,14 +112,6 @@ public class SecurityConfig {
                 )
 
                 .authenticationProvider(authenticationProvider())
-
-                .exceptionHandling(ex -> ex
-                        .authenticationEntryPoint((request, response, authException) -> {
-                            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                            response.setContentType("application/json");
-                            response.getWriter().write("{\"error\":\"Unauthorized\"}");
-                        })
-                )
 
                 .addFilterBefore(
                         jwtFilter,
