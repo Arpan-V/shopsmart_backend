@@ -102,8 +102,8 @@ public class OAuth2SuccessHandler
                         .httpOnly(true)
                         .secure(true)
                         .path("/")
-                        .maxAge(15 * 60)
                         .sameSite("None")
+                        .maxAge(15 * 60)
                         .build();
 
         ResponseCookie refreshCookie =
@@ -114,8 +114,8 @@ public class OAuth2SuccessHandler
                         .httpOnly(true)
                         .secure(true)
                         .path("/")
-                        .maxAge(7 * 24 * 60 * 60)
                         .sameSite("None")
+                        .maxAge(7 * 24 * 60 * 60)
                         .build();
 
         response.addHeader(

@@ -25,7 +25,10 @@ public class CustomUserDetails implements UserDetails {
 
     @Override
     public @NotNull String getPassword() {
-        return user.getPassword();
+
+        return user.getPassword() != null
+                ? user.getPassword()
+                : "{noop}oauth2user";
     }
 
     @Override
