@@ -1,39 +1,45 @@
 package com.arpan.backend.service.impl;
-
-import lombok.RequiredArgsConstructor;
+import com.sendgrid.Method;
+import com.sendgrid.Request;
+import com.sendgrid.Response;
+import com.sendgrid.SendGrid;
+import com.sendgrid.helpers.mail.Mail;
+import com.sendgrid.helpers.mail.objects.Content;
+import com.sendgrid.helpers.mail.objects.Email;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.mail.SimpleMailMessage;
-import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
+
 @Service
-@RequiredArgsConstructor
+
 public class EmailService {
 
-    private final JavaMailSender mailSender;
+    private final SendGrid sendGrid;
 
-    // 1. THIS IS THE FIX. This tells Spring to grab the real email from your envs.
-    @Value("${spring.mail.username}")
-    private String senderEmail;
+    @Value("${sendgrid.from.email}")
+    private String fromEmail;
 
-    public void sendAlert(String to, String subject, String body) {
+    public EmailService(SendGrid sendGrid) {
+        this.sendGrid = sendGrid;
+    }
+
+    public void sendAlert(String toEmail, String subject, String bodyContent) {
+        Email from = new Email(fromEmail);
+        Email to = new Email(toEmail);
+        Content content = new Content("text/plain", bodyContent);
+        Mail mail = new Mail(from, subject, to, content);
+
+        Request request = new Request();
         try {
-            SimpleMailMessage message = new SimpleMailMessage();
+            request.setMethod(Method.POST);
+            request.setEndpoint("mail/send");
+            request.setBody(mail.build());
+            Response response = sendGrid.api(request);
 
-            // 2. Use the variable here! No quotes around it.
-            message.setFrom(senderEmail);
-
-            message.setTo(to);
-            message.setSubject(subject);
-            message.setText(body);
-
-            System.out.println("Attempting to send email to: " + to); // Added a 'start' log
-            mailSender.send(message);
-            System.out.println("Email successfully sent to Google for: " + to);
-
-        } catch (Exception e) {
-            System.err.println("SMTP Error: " + e.getMessage());
-            e.printStackTrace();
+            System.out.println("Status Code: " + response.getStatusCode());
+        } catch (IOException ex) {
+            ex.printStackTrace();
         }
     }
 }
