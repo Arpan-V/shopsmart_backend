@@ -37,7 +37,7 @@ public class OAuth2SuccessHandler
 
     @Value("${app.frontend-url}")
     private String frontendUrl;
-    
+
     @Override
     public void onAuthenticationSuccess(
             HttpServletRequest request,
@@ -103,7 +103,6 @@ public class OAuth2SuccessHandler
                         .secure(true)
                         .path("/")
                         .sameSite("None")
-                        .domain("shopsmart-backend-ve7y.onrender.com")
                         .maxAge(15 * 60)
                         .build();
 
@@ -116,7 +115,6 @@ public class OAuth2SuccessHandler
                         .secure(true)
                         .path("/")
                         .sameSite("None")
-                        .domain("shopsmart-backend-ve7y.onrender.com")
                         .maxAge(7 * 24 * 60 * 60)
                         .build();
 
