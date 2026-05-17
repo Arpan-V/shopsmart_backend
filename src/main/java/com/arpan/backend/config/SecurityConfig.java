@@ -105,9 +105,15 @@ public class SecurityConfig {
                         .successHandler(oAuth2SuccessHandler)
                 )
 
+//                .sessionManagement(session ->
+//                        session.sessionCreationPolicy(
+//                                SessionCreationPolicy.STATELESS
+//                        )
+//                )
+
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(
-                                SessionCreationPolicy.STATELESS
+                                SessionCreationPolicy.IF_REQUIRED
                         )
                 )
 
