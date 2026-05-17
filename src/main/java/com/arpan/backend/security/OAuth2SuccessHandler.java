@@ -26,13 +26,10 @@ import java.time.LocalDateTime;
 
 @Component
 @RequiredArgsConstructor
-public class OAuth2SuccessHandler
-        implements AuthenticationSuccessHandler {
+public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
 
     private final UserRepo userRepo;
-
     private final JWTService jwtService;
-
     private final RefreshTokenRepository refreshTokenRepository;
 
     @Value("${app.frontend-url}")
@@ -45,107 +42,68 @@ public class OAuth2SuccessHandler
             Authentication authentication
     ) throws IOException, ServletException {
 
-        OAuth2User oauthUser =
-                (OAuth2User) authentication.getPrincipal();
+        OAuth2User oauthUser = (OAuth2User) authentication.getPrincipal();
+        String email = oauthUser.getAttribute("email");
 
-        String email =
-                oauthUser.getAttribute("email");
+        // 1. Find or Create user
+        Users user = userRepo.findByEmail(email)
+                .orElseGet(() -> {
+                    // Only generate username if user doesn't exist
+                    String baseUsername = email.split("@")[0].replaceAll("[^A-Za-z0-9]", "");
+                    String uniqueUsername = generateUniqueUsername(baseUsername);
 
-        String baseUsername =
-                email.split("@")[0]
-                        .replaceAll("[^A-Za-z0-9]", "");
+                    Users newUser = Users.builder()
+                            .email(email)
+                            .username(uniqueUsername)
+                            .password(null)
+                            .enabled(true)
+                            .role("ROLE_USER")
+                            .provider(AuthProvider.GOOGLE)
+                            .build();
+                    return userRepo.save(newUser);
+                });
 
-        String username =
-                generateUniqueUsername(baseUsername);
+        // 2. Generate Tokens
+        String accessToken = jwtService.generateAccessToken(user.getUsername());
+        String refreshToken = jwtService.generateRefreshToken(user.getUsername());
 
-        Users user =
-                userRepo.findByEmail(email)
-                        .orElseGet(() -> {
-
-                            Users newUser = Users.builder()
-                                    .email(email)
-                                    .username(username)
-                                    .password(null)
-                                    .enabled(true)
-                                    .role("ROLE_USER")
-                                    .provider(AuthProvider.GOOGLE)
-                                    .build();
-
-                            return userRepo.save(newUser);
-                        });
-
-        String accessToken =
-                jwtService.generateAccessToken(
-                        user.getUsername()
-                );
-
-        String refreshToken =
-                jwtService.generateRefreshToken(
-                        user.getUsername()
-                );
-
-        RefreshToken tokenEntity =
-                RefreshToken.builder()
-                        .token(refreshToken)
-                        .expiryDate(LocalDateTime.now().plusDays(7))
-                        .revoked(false)
-                        .user(user)
-                        .build();
-
+        // 3. Persist Refresh Token
+        RefreshToken tokenEntity = RefreshToken.builder()
+                .token(refreshToken)
+                .expiryDate(LocalDateTime.now().plusDays(7))
+                .revoked(false)
+                .user(user)
+                .build();
         refreshTokenRepository.save(tokenEntity);
 
-        ResponseCookie accessCookie =
-                ResponseCookie.from(
-                                "accessToken",
-                                accessToken
-                        )
-                        .httpOnly(true)
-                        .secure(true)
-                        .path("/")
-                        .sameSite("None")
-                        .maxAge(15 * 60)
-                        .build();
+        // 4. Set Cookies (Standardized)
+        response.addHeader(HttpHeaders.SET_COOKIE,
+                createCookie("accessToken", accessToken, 15 * 60).toString());
+        response.addHeader(HttpHeaders.SET_COOKIE,
+                createCookie("refreshToken", refreshToken, 7 * 24 * 60 * 60).toString());
 
-        ResponseCookie refreshCookie =
-                ResponseCookie.from(
-                                "refreshToken",
-                                refreshToken
-                        )
-                        .httpOnly(true)
-                        .secure(true)
-                        .path("/")
-                        .sameSite("None")
-                        .maxAge(7 * 24 * 60 * 60)
-                        .build();
-
-        response.addHeader(
-                HttpHeaders.SET_COOKIE,
-                accessCookie.toString()
-        );
-
-        response.addHeader(
-                HttpHeaders.SET_COOKIE,
-                refreshCookie.toString()
-        );
-
-        response.sendRedirect(frontendUrl + "/oauth-success");    }
+        // 5. Redirect to frontend
+        response.sendRedirect(frontendUrl + "/oauth-success");
+    }
 
     private String generateUniqueUsername(String base) {
-
         String username = base;
-
         int counter = 1;
-
-        while (
-                userRepo.findByUsername(username)
-                        .isPresent()
-        ) {
-
+        // This is okay for small apps, but consider UUID if you expect millions of users
+        while (userRepo.findByUsername(username).isPresent()) {
             username = base + counter;
-
             counter++;
         }
-
         return username;
+    }
+
+    private ResponseCookie createCookie(String name, String value, long maxAge) {
+        return ResponseCookie.from(name, value)
+                .httpOnly(true)
+                .secure(true)
+                .path("/")
+                .maxAge(maxAge)
+                .sameSite("None")
+                .build();
     }
 }
