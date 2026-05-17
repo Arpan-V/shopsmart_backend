@@ -136,12 +136,12 @@ public class AuthServiceImpl implements AuthService {
                         "/api/auth/verify?token=" +
                         token;
 
-        emailService.sendAlert(
-                user.getEmail(),
-                "Verify your account",
-                "Click the link to verify your account for ShopSmart:\n"
-                        + link
-        );
+//        emailService.sendAlert(
+//                user.getEmail(),
+//                "Verify your account",
+//                "Click the link to verify your account for ShopSmart:\n"
+//                        + link
+//        );
 
         return new ApiResponse<>(
                 true,
