@@ -22,6 +22,7 @@ public class EmailService {
             message.setText(body);
 
             mailSender.send(message);
+            System.out.println("Email sent");
         } catch (Exception e) {
             // This will show up in your Render "Logs" tab
             System.err.println("SMTP Error: " + e.getMessage());
