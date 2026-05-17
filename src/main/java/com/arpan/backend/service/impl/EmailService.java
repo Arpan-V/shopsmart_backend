@@ -13,11 +13,19 @@ public class EmailService {
 
     public void sendAlert(String to, String subject, String body) {
 
-        SimpleMailMessage message = new SimpleMailMessage();
-        message.setTo(to);
-        message.setSubject(subject);
-        message.setText(body);
+        try {
+            SimpleMailMessage message = new SimpleMailMessage();
+            // Important: Gmail often rejects emails where "From" doesn't match the Auth user
+            message.setFrom("${spring.mail.username}");
+            message.setTo(to);
+            message.setSubject(subject);
+            message.setText(body);
 
-        mailSender.send(message);
+            mailSender.send(message);
+        } catch (Exception e) {
+            // This will show up in your Render "Logs" tab
+            System.err.println("SMTP Error: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
 }
