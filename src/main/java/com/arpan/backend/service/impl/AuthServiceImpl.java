@@ -66,7 +66,6 @@ public class AuthServiceImpl implements AuthService {
                 request.getUsername()
         );
 
-        // Username exists
         if (
                 userRepository.findByUsername(
                         request.getUsername()
@@ -78,7 +77,6 @@ public class AuthServiceImpl implements AuthService {
             );
         }
 
-        // Email exists
         if (
                 userRepository.findByEmail(
                         request.getEmail()
@@ -110,7 +108,6 @@ public class AuthServiceImpl implements AuthService {
 
         userRepository.save(user);
 
-        // Generate verification token
         String token =
                 UUID.randomUUID().toString();
 
@@ -250,7 +247,6 @@ public class AuthServiceImpl implements AuthService {
                                 )
                         );
 
-        // Reuse detection
         if (tokenEntity.isRevoked()) {
 
             throw new AuthException(
@@ -280,14 +276,12 @@ public class AuthServiceImpl implements AuthService {
             );
         }
 
-        // Revoke old token
         tokenEntity.setRevoked(true);
 
         refreshTokenRepository.save(
                 tokenEntity
         );
 
-        // Generate new refresh token
         String newRefreshToken =
                 jwtService.generateRefreshToken(
                         username
@@ -308,7 +302,6 @@ public class AuthServiceImpl implements AuthService {
                 newTokenEntity
         );
 
-        // Generate new access token
         String newAccessToken =
                 jwtService.generateAccessToken(
                         username
@@ -365,7 +358,6 @@ public class AuthServiceImpl implements AuthService {
                                 )
                         );
 
-        // Expiry check
         if (
                 verificationToken.getExpiryDate()
                         .isBefore(
@@ -399,7 +391,6 @@ public class AuthServiceImpl implements AuthService {
                                 )
                         );
 
-        // Already verified
         if (user.isEnabled()) {
 
             throw new RuntimeException(
@@ -411,7 +402,6 @@ public class AuthServiceImpl implements AuthService {
                 verificationTokenRepository.findByUser(user)
                         .orElse(null);
 
-        // Rate limit
         if (
                 existingToken != null &&
                         existingToken.getLastSentAt() != null
@@ -444,7 +434,6 @@ public class AuthServiceImpl implements AuthService {
                     );
         }
 
-        // Generate new token
         String token =
                 UUID.randomUUID().toString();
 

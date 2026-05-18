@@ -27,7 +27,6 @@ public class ProductServiceImpl implements ProductService {
     private final ProductRepo productRepo;
     private final UserRepo userRepository;
 
-    // 🔐 Helper: get current user
     private Users getCurrentUser() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         assert auth != null;
@@ -38,7 +37,6 @@ public class ProductServiceImpl implements ProductService {
                 .orElseThrow(() -> new RuntimeException("User not found"));
     }
 
-    // 🔐 Helper: check if admin
     private boolean isAdmin(Authentication auth) {
         return auth.getAuthorities().stream()
                 .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
@@ -120,6 +118,7 @@ public class ProductServiceImpl implements ProductService {
     public ProductResponse updateProduct(Long id, ProductRequest request) {
 
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        assert auth != null;
         boolean admin = isAdmin(auth);
 
         Users currentUser = getCurrentUser();
@@ -129,7 +128,6 @@ public class ProductServiceImpl implements ProductService {
 
         validateOwnershipOrAdmin(existingProduct, currentUser, admin);
 
-        // 🔄 update fields
         existingProduct.setName(request.getName());
         existingProduct.setDescription(request.getDescription());
         existingProduct.setBrand(request.getBrand());

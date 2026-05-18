@@ -13,6 +13,7 @@ import jakarta.servlet.http.HttpServletResponse;
 
 import lombok.RequiredArgsConstructor;
 
+import org.jspecify.annotations.NonNull;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
@@ -37,18 +38,18 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
 
     @Override
     public void onAuthenticationSuccess(
-            HttpServletRequest request,
+            @NonNull HttpServletRequest request,
             HttpServletResponse response,
             Authentication authentication
     ) throws IOException, ServletException {
 
         OAuth2User oauthUser = (OAuth2User) authentication.getPrincipal();
+        assert oauthUser != null;
         String email = oauthUser.getAttribute("email");
 
-        // 1. Find or Create user
         Users user = userRepo.findByEmail(email)
                 .orElseGet(() -> {
-                    // Only generate username if user doesn't exist
+                    assert email != null;
                     String baseUsername = email.split("@")[0].replaceAll("[^A-Za-z0-9]", "");
                     String uniqueUsername = generateUniqueUsername(baseUsername);
 
@@ -63,11 +64,9 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
                     return userRepo.save(newUser);
                 });
 
-        // 2. Generate Tokens
         String accessToken = jwtService.generateAccessToken(user.getUsername());
         String refreshToken = jwtService.generateRefreshToken(user.getUsername());
 
-        // 3. Persist Refresh Token
         RefreshToken tokenEntity = RefreshToken.builder()
                 .token(refreshToken)
                 .expiryDate(LocalDateTime.now().plusDays(7))
@@ -76,20 +75,17 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
                 .build();
         refreshTokenRepository.save(tokenEntity);
 
-        // 4. Set Cookies (Standardized)
         response.addHeader(HttpHeaders.SET_COOKIE,
                 createCookie("accessToken", accessToken, 15 * 60).toString());
         response.addHeader(HttpHeaders.SET_COOKIE,
                 createCookie("refreshToken", refreshToken, 7 * 24 * 60 * 60).toString());
 
-        // 5. Redirect to frontend
         response.sendRedirect(frontendUrl + "/oauth-success");
     }
 
     private String generateUniqueUsername(String base) {
         String username = base;
         int counter = 1;
-        // This is okay for small apps, but consider UUID if you expect millions of users
         while (userRepo.findByUsername(username).isPresent()) {
             username = base + counter;
             counter++;

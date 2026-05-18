@@ -41,7 +41,7 @@ public class AdminServiceImpl implements AdminService {
 
         user.setEnabled(false);
         userRepository.save(user);
-        logger.info("Admin blocked a user", id);
+        logger.info("Admin blocked a user {}", id);
     }
 
     @Override

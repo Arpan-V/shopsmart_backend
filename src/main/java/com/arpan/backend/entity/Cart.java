@@ -20,12 +20,10 @@ public class Cart {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // One user -> one cart
     @OneToOne
     @JoinColumn(name = "user_id", nullable = false, unique = true)
     private Users user;
 
-    // One cart -> many cart items
     @OneToMany(
             mappedBy = "cart",
             cascade = CascadeType.ALL,

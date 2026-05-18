@@ -29,7 +29,6 @@ public class AuthController {
     @Value("${app.frontend-url}")
     private String frontendUrl;
 
-    // Time constants (in seconds)
     private static final long ACCESS_TOKEN_EXPIRY =
             15 * 60; // 15 mins
 

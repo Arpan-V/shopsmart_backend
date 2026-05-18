@@ -23,7 +23,7 @@ import java.io.IOException;
 public class JwtFilter extends OncePerRequestFilter {
 
     private final JWTService jwtService;
-    // Inject the service directly instead of ApplicationContext
+
     private final CustomUserDetailsService userDetailsService;
 
     @Override
@@ -33,43 +33,69 @@ public class JwtFilter extends OncePerRequestFilter {
             @NonNull FilterChain filterChain
     ) throws ServletException, IOException {
 
-        // 1. Extract token using Spring Utility
         String token =
                 extractTokenFromCookies(request);
 
-        // 2. If no token, just move to the next filter
         if (token == null) {
+
             filterChain.doFilter(request, response);
             return;
         }
 
         String username;
+
         try {
-            username = jwtService.extractUserName(token);
+
+            username =
+                    jwtService.extractUserName(token);
+
         } catch (Exception e) {
-            // Token is malformed or expired; just continue as anonymous
+
+            // Token invalid, malformed, or expired
             SecurityContextHolder.clearContext();
+
             filterChain.doFilter(request, response);
             return;
         }
 
-        // 3. Authenticate if not already authenticated
-        if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+        if (
+                username != null &&
+                        SecurityContextHolder
+                                .getContext()
+                                .getAuthentication() == null
+        ) {
 
-            if (jwtService.validateToken(token, userDetails)) {
-                UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
-                        userDetails, null, userDetails.getAuthorities()
+            UserDetails userDetails =
+                    userDetailsService.loadUserByUsername(
+                            username
+                    );
+
+            if (
+                    jwtService.validateAccessToken(
+                            token,
+                            userDetails
+                    )
+            ) {
+
+                UsernamePasswordAuthenticationToken authToken =
+                        new UsernamePasswordAuthenticationToken(
+                                userDetails,
+                                null,
+                                userDetails.getAuthorities()
+                        );
+
+                authToken.setDetails(
+                        new WebAuthenticationDetailsSource()
+                                .buildDetails(request)
                 );
 
-                authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                SecurityContextHolder.getContext().setAuthentication(authToken);
+                SecurityContextHolder.getContext()
+                        .setAuthentication(authToken);
             }
         }
 
         filterChain.doFilter(request, response);
     }
-
 
     private String extractTokenFromCookies(
             HttpServletRequest request
@@ -81,7 +107,11 @@ public class JwtFilter extends OncePerRequestFilter {
 
         for (Cookie cookie : request.getCookies()) {
 
-            if (cookie.getName().equals("accessToken")) {
+            if (
+                    cookie.getName()
+                            .equals("accessToken")
+            ) {
+
                 return cookie.getValue();
             }
         }

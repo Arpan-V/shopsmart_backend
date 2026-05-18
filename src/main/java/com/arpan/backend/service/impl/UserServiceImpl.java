@@ -8,6 +8,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.util.Objects;
+
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
@@ -16,8 +18,8 @@ public class UserServiceImpl implements UserService {
 
     public UserResponse getCurrentUser() {
 
-        String username = SecurityContextHolder.getContext()
-                .getAuthentication()
+        String username = Objects.requireNonNull(SecurityContextHolder.getContext()
+                        .getAuthentication())
                 .getName();
 
         Users user = userRepository.findByUsername(username)

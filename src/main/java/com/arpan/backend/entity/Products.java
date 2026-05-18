@@ -30,7 +30,6 @@ public class Products {
     private boolean productAvailable;
     private LocalDateTime releaseDate;
 
-    //Image
     private String imageName;
     private String imageType;
     // Large Object
@@ -42,6 +41,4 @@ public class Products {
     @ManyToOne
     @JoinColumn(name = "user_id")
     private Users user;
-
-
 }

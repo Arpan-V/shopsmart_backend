@@ -17,10 +17,6 @@ public class CartController {
 
     private final CartService cartService;
 
-    // =====================================================
-    // GET CART
-    // =====================================================
-
     @GetMapping
     public ResponseEntity<ApiResponse<CartResponse>> getCart() {
 
@@ -32,10 +28,6 @@ public class CartController {
                 )
         );
     }
-
-    // =====================================================
-    // ADD TO CART
-    // =====================================================
 
     @PostMapping("/add")
     public ResponseEntity<ApiResponse<CartResponse>> addToCart(
@@ -52,10 +44,6 @@ public class CartController {
                 )
         );
     }
-
-    // =====================================================
-    // UPDATE QUANTITY
-    // =====================================================
 
     @PutMapping("/item/{cartItemId}")
     public ResponseEntity<ApiResponse<CartResponse>> updateQuantity(
@@ -78,10 +66,6 @@ public class CartController {
         );
     }
 
-    // =====================================================
-    // REMOVE ITEM
-    // =====================================================
-
     @DeleteMapping("/item/{cartItemId}")
     public ResponseEntity<ApiResponse<CartResponse>> removeItem(
             @PathVariable Long cartItemId
@@ -95,10 +79,6 @@ public class CartController {
                 )
         );
     }
-
-    // =====================================================
-    // CLEAR CART
-    // =====================================================
 
     @DeleteMapping("/clear")
     public ResponseEntity<ApiResponse<String>> clearCart() {
