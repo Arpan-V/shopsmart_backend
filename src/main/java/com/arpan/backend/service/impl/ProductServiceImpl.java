@@ -94,7 +94,7 @@ public class ProductServiceImpl implements ProductService {
         Users currentUser = getCurrentUser();
 
         Products product = productRepo.findById(prodId)
-                .orElseThrow(() -> new RuntimeException("Product not found"));
+                .orElseThrow(() -> new ProductNotFoundException("Product not found"));
 
         validateOwnershipOrAdmin(product, currentUser, admin);
 
@@ -125,7 +125,7 @@ public class ProductServiceImpl implements ProductService {
         Users currentUser = getCurrentUser();
 
         Products existingProduct = productRepo.findById(id)
-                .orElseThrow(() -> new RuntimeException("Product not found"));
+                .orElseThrow(() -> new ProductNotFoundException("Product not found"));
 
         validateOwnershipOrAdmin(existingProduct, currentUser, admin);
 
@@ -159,7 +159,7 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public Products getProductEntity(Long id) {
         return productRepo.findById(id)
-                .orElseThrow(() -> new RuntimeException("Product not found"));
+                .orElseThrow(() -> new ProductNotFoundException("Product not found"));
     }
 
     private ProductResponse mapToResponse(Products product) {

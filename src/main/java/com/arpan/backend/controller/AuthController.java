@@ -1,12 +1,16 @@
 package com.arpan.backend.controller;
 
 import com.arpan.backend.dto.ApiResponse;
+import com.arpan.backend.dto.auth.AuthResponse;
 import com.arpan.backend.dto.auth.LoginRequest;
 import com.arpan.backend.dto.auth.RegisterRequest;
 import com.arpan.backend.service.AuthService;
+
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
+
 import lombok.RequiredArgsConstructor;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
@@ -26,58 +30,173 @@ public class AuthController {
     private String frontendUrl;
 
     // Time constants (in seconds)
-    private static final long ACCESS_TOKEN_EXPIRY = 15 * 60; // 15 mins
-    private static final long REFRESH_TOKEN_EXPIRY = 7 * 24 * 60 * 60; // 7 days
+    private static final long ACCESS_TOKEN_EXPIRY =
+            15 * 60; // 15 mins
+
+    private static final long REFRESH_TOKEN_EXPIRY =
+            7 * 24 * 60 * 60; // 7 days
 
     @PostMapping("/register")
     public ResponseEntity<ApiResponse<String>> register(
             @Valid @RequestBody RegisterRequest request
     ) {
-        return ResponseEntity.ok(authService.register(request));
+
+        return ResponseEntity.ok(
+                authService.register(request)
+        );
     }
 
     @PostMapping("/login")
     public ResponseEntity<ApiResponse<String>> login(
             @RequestBody LoginRequest request
     ) {
-        var authResponse = authService.login(request);
+
+        ApiResponse<AuthResponse> authResponse =
+                authService.login(request);
+
+        // Login failed
+        if (
+                !authResponse.isSuccess() ||
+                        authResponse.getData() == null
+        ) {
+
+            return ResponseEntity.badRequest()
+                    .body(
+                            ApiResponse.error(
+                                    authResponse.getMessage()
+                            )
+                    );
+        }
+
+        AuthResponse data =
+                authResponse.getData();
 
         return ResponseEntity.ok()
                 .headers(headers -> {
-                    headers.add(HttpHeaders.SET_COOKIE,
-                            createCookie("accessToken", authResponse.getData().getAccessToken(), ACCESS_TOKEN_EXPIRY).toString());
-                    headers.add(HttpHeaders.SET_COOKIE,
-                            createCookie("refreshToken", authResponse.getData().getRefreshToken(), REFRESH_TOKEN_EXPIRY).toString());
+
+                    headers.add(
+                            HttpHeaders.SET_COOKIE,
+                            createCookie(
+                                    "accessToken",
+                                    data.getAccessToken(),
+                                    ACCESS_TOKEN_EXPIRY
+                            ).toString()
+                    );
+
+                    headers.add(
+                            HttpHeaders.SET_COOKIE,
+                            createCookie(
+                                    "refreshToken",
+                                    data.getRefreshToken(),
+                                    REFRESH_TOKEN_EXPIRY
+                            ).toString()
+                    );
                 })
-                .body(ApiResponse.success("Login successful"));
+                .body(
+                        ApiResponse.success(
+                                "Login successful"
+                        )
+                );
     }
 
     @PostMapping("/refresh")
     public ResponseEntity<ApiResponse<String>> refresh(
-            @CookieValue(name = "refreshToken", required = false) String refreshToken
+            @CookieValue(
+                    name = "refreshToken",
+                    required = false
+            )
+            String refreshToken
     ) {
-        var response = authService.refresh(refreshToken);
+
+        if (
+                refreshToken == null ||
+                        refreshToken.isBlank()
+        ) {
+
+            return ResponseEntity.badRequest()
+                    .body(
+                            ApiResponse.error(
+                                    "Refresh token missing"
+                            )
+                    );
+        }
+
+        ApiResponse<AuthResponse> response =
+                authService.refresh(refreshToken);
+
+        // Refresh failed
+        if (
+                !response.isSuccess() ||
+                        response.getData() == null
+        ) {
+
+            return ResponseEntity.badRequest()
+                    .body(
+                            ApiResponse.error(
+                                    response.getMessage()
+                            )
+                    );
+        }
+
+        AuthResponse data =
+                response.getData();
 
         return ResponseEntity.ok()
-                .header(HttpHeaders.SET_COOKIE,
-                        createCookie("accessToken", response.getData().getAccessToken(), ACCESS_TOKEN_EXPIRY).toString())
-                .body(ApiResponse.success("Token refreshed"));
+                .header(
+                        HttpHeaders.SET_COOKIE,
+                        createCookie(
+                                "accessToken",
+                                data.getAccessToken(),
+                                ACCESS_TOKEN_EXPIRY
+                        ).toString()
+                )
+                .body(
+                        ApiResponse.success(
+                                "Token refreshed"
+                        )
+                );
     }
 
     @PostMapping("/logout")
     public ResponseEntity<ApiResponse<String>> logout(
-            @CookieValue(name = "refreshToken", required = false) String refreshToken
+            @CookieValue(
+                    name = "refreshToken",
+                    required = false
+            )
+            String refreshToken
     ) {
+
         if (refreshToken != null) {
+
             authService.logout(refreshToken);
         }
 
         return ResponseEntity.ok()
                 .headers(headers -> {
-                    headers.add(HttpHeaders.SET_COOKIE, createCookie("accessToken", "", 0).toString());
-                    headers.add(HttpHeaders.SET_COOKIE, createCookie("refreshToken", "", 0).toString());
+
+                    headers.add(
+                            HttpHeaders.SET_COOKIE,
+                            createCookie(
+                                    "accessToken",
+                                    "",
+                                    0
+                            ).toString()
+                    );
+
+                    headers.add(
+                            HttpHeaders.SET_COOKIE,
+                            createCookie(
+                                    "refreshToken",
+                                    "",
+                                    0
+                            ).toString()
+                    );
                 })
-                .body(ApiResponse.success("Logged out successfully"));
+                .body(
+                        ApiResponse.success(
+                                "Logged out successfully"
+                        )
+                );
     }
 
     @GetMapping("/verify")
@@ -85,24 +204,40 @@ public class AuthController {
             @RequestParam String token,
             HttpServletResponse response
     ) throws IOException {
+
         authService.verify(token);
-        response.sendRedirect(frontendUrl + "/auth?verified=1");
+
+        response.sendRedirect(
+                frontendUrl + "/auth?verified=1"
+        );
     }
 
     @PostMapping("/resend-verification")
-    public ResponseEntity<ApiResponse<String>> resendVerification(
+    public ResponseEntity<ApiResponse<String>>
+    resendVerification(
             @RequestParam String email
     ) {
-        return ResponseEntity.ok(ApiResponse.success(authService.resendVerification(email)));
+
+        return ResponseEntity.ok(
+                ApiResponse.success(
+                        authService.resendVerification(email)
+                )
+        );
     }
 
     /**
-     * Private helper to ensure all security cookies are configured identically.
+     * Private helper to ensure all security cookies
+     * are configured identically.
      */
-    private ResponseCookie createCookie(String name, String value, long maxAgeInSeconds) {
+    private ResponseCookie createCookie(
+            String name,
+            String value,
+            long maxAgeInSeconds
+    ) {
+
         return ResponseCookie.from(name, value)
                 .httpOnly(true)
-                .secure(true) // Required for SameSite=None
+                .secure(true)
                 .path("/")
                 .maxAge(maxAgeInSeconds)
                 .sameSite("None")
