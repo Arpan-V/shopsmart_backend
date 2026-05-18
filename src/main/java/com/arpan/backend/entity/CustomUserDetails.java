@@ -1,6 +1,4 @@
 package com.arpan.backend.entity;
-import jakarta.validation.constraints.NotNull;
-import org.jspecify.annotations.Nullable;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
