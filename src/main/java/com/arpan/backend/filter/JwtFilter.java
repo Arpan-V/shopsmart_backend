@@ -34,15 +34,8 @@ public class JwtFilter extends OncePerRequestFilter {
     ) throws ServletException, IOException {
 
         // 1. Extract token using Spring Utility
-        String token = null;
-        if (request.getCookies() != null) {
-            for (Cookie cookie : request.getCookies()) {
-                if ("accessToken".equals(cookie.getName())) {
-                    token = cookie.getValue();
-                    break;
-                }
-            }
-        }
+        String token =
+                extractTokenFromCookies(request);
 
         // 2. If no token, just move to the next filter
         if (token == null) {
@@ -55,6 +48,7 @@ public class JwtFilter extends OncePerRequestFilter {
             username = jwtService.extractUserName(token);
         } catch (Exception e) {
             // Token is malformed or expired; just continue as anonymous
+            SecurityContextHolder.clearContext();
             filterChain.doFilter(request, response);
             return;
         }
