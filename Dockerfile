@@ -12,8 +12,8 @@ RUN ./mvnw clean package -DskipTests
 FROM eclipse-temurin:26-jre
 WORKDIR /app
 
-RUN useradd -m appuser
-USER appuser
+RUN useradd -m arpan
+USER arpan
 
 COPY --from=build /app/target/*.jar app.jar
 
