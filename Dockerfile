@@ -1,28 +1,21 @@
-# ---------- Build Stage ----------
 FROM eclipse-temurin:26-jdk AS build
-
 WORKDIR /app
 
-COPY .mvn .mvn
-COPY mvnw .
-COPY pom.xml .
+COPY mvnw pom.xml ./
+COPY .mvn/ .mvn/
+RUN chmod +x mvnw && ./mvnw dependency:go-offline
 
-RUN chmod +x mvnw
-
-RUN ./mvnw dependency:go-offline
-
-COPY src src
-
+COPY src/ src/
 RUN ./mvnw clean package -DskipTests
 
 
-# ---------- Run Stage ----------
 FROM eclipse-temurin:26-jre
-
 WORKDIR /app
 
-COPY --from=build /app/target/backend-0.0.1-SNAPSHOT.jar app.jar
+RUN useradd -m appuser
+USER appuser
+
+COPY --from=build /app/target/*.jar app.jar
 
 EXPOSE 8080
-
 ENTRYPOINT ["java", "-jar", "app.jar"]
