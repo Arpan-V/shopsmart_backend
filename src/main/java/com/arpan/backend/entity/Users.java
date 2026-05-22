@@ -33,6 +33,8 @@ public class Users {
     @Enumerated(EnumType.STRING)
     private AuthProvider provider;
 
+    private String address;
+
     @Override
     public String toString() {
         return "Users{" +

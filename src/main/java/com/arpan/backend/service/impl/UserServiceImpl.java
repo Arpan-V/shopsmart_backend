@@ -1,5 +1,6 @@
 package com.arpan.backend.service.impl;
 
+import com.arpan.backend.dto.UserRequest;
 import com.arpan.backend.dto.UserResponse;
 import com.arpan.backend.entity.Users;
 import com.arpan.backend.repository.UserRepo;
@@ -30,7 +31,19 @@ public class UserServiceImpl implements UserService {
                 user.getUsername(),
                 user.getEmail(),
                 user.getRole(),
-                user.isEnabled()
+                user.isEnabled(),
+                user.getAddress()
         );
     }
+
+    @Override
+    public void addAddress(UserRequest request) {
+        String username = Objects.requireNonNull(SecurityContextHolder.getContext()
+                        .getAuthentication())
+                .getName();
+        Users user = userRepository.findByUsername(username).orElseThrow(() -> new RuntimeException("User not found"));
+        user.setAddress(request.getAddress());
+    }
+
+
 }
