@@ -1,6 +1,5 @@
 package com.arpan.backend.controller;
 
-import com.arpan.backend.dto.UserRequest;
 import com.arpan.backend.dto.UserResponse;
 import com.arpan.backend.service.UserService;
 import lombok.Getter;

@@ -1,6 +1,5 @@
 package com.arpan.backend.service.impl;
 
-import com.arpan.backend.dto.UserRequest;
 import com.arpan.backend.dto.UserResponse;
 import com.arpan.backend.entity.Users;
 import com.arpan.backend.repository.UserRepo;
