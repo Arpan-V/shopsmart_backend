@@ -21,10 +21,4 @@ public class UserController {
         return ResponseEntity.ok(userService.getCurrentUser());
     }
 
-
-    @PostMapping("/api/users/me/addAddress")
-    public  ResponseEntity<String> addAddress(UserRequest request){
-        userService.addAddress(request);
-        return ResponseEntity.ok( "Address added");
-    }
 }

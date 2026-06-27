@@ -36,14 +36,4 @@ public class UserServiceImpl implements UserService {
         );
     }
 
-    @Override
-    public void addAddress(UserRequest request) {
-        String username = Objects.requireNonNull(SecurityContextHolder.getContext()
-                        .getAuthentication())
-                .getName();
-        Users user = userRepository.findByUsername(username).orElseThrow(() -> new RuntimeException("User not found"));
-        user.setAddress(request.getAddress());
-    }
-
-
 }
