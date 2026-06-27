@@ -30,8 +30,7 @@ public class UserServiceImpl implements UserService {
                 user.getUsername(),
                 user.getEmail(),
                 user.getRole(),
-                user.isEnabled(),
-                user.getAddress()
+                user.isEnabled()
         );
     }
 
