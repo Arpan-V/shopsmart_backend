@@ -168,7 +168,7 @@ git clone https://github.com/arpan-v/shopsmart_backend.git
 cd shopsmart
 ```
 
-### Environment Variables
+### Export Environment Variables
 
 1. Go to `src/java/com/arpan/backend/resources`
 
