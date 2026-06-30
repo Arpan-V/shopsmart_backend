@@ -13,19 +13,24 @@ This project was built to simulate real-world backend development practices rath
 
 ## 🚀 Key Features
 
-* **Advanced Authentication & Security:** * Stateless JWT-based authentication with Access & Refresh token flows.
+* **Advanced Authentication & Security:** 
+  * Stateless JWT-based authentication with Access & Refresh token flows.
   * Google OAuth 2.0 Login integration.
   * Secure HTTP-only cookie storage and Spring Security filter chain configuration.
   * Role-based authorization (Admin vs. Standard User).
   * BCrypt password hashing and Two-Step Verification via email.
-* **Optimized Database & Performance:** * PostgreSQL integration using Spring Data JPA and Hibernate.
+
+* **Optimized Database & Performance:** 
+  * PostgreSQL integration using Spring Data JPA and Hibernate.
   * DTO projections to reduce unnecessary data fetching.
   * Lazy loading for image data using LOB fetch strategies.
   * Scalable, paginated API responses and JPQL-based product search.
+
 * **Core Business Logic:**
   * Complete product management with secure image upload support.
   * Persistent shopping cart management (One-to-One User/Cart relationship).
   * Global exception handling and robust request validation.
+
 * **DevOps & Deployment:** * Fully dockerized backend for easy environment setup.
   * Environment variable-driven configuration.
 
@@ -44,7 +49,20 @@ This project was built to simulate real-world backend development practices rath
 
 The project follows a layered architecture (Controllers -> Services -> Repositories) separating concerns to keep the codebase maintainable. 
 
-*(Optional: Insert an image of your Database Schema or Architecture diagram here)*
+src/main/java/com/arpan/backend
+├── controller 
+├── dto 
+├── entity 
+├── repository 
+├── service 
+│ ├── interfaces 
+│ └── implementation 
+├── security 
+├── configuration 
+├── exception 
+├── util 
+└── ShopSmartApplication
+
 **Key Database Relationships:**
 * `User` ↔ `Cart` (One-to-One)
 * `User` ↔ `Products` (One-to-Many)
@@ -64,3 +82,49 @@ The project follows a layered architecture (Controllers -> Services -> Repositor
 ```bash
 git clone [https://github.com/arpan-v/shopsmart_backend.git](https://github.com/arpan-v/shopsmart_backend.git)
 cd shopsmart
+```
+### 2. Environment Setup
+
+The application requires certain environment variables to run securely (Database URLs, JWT secrets, OAuth credentials).
+
+  1.  Create an application.properties or .env file in your root directory based on the provided example.
+
+  2.  Update the variables with your local database credentials and Google OAuth keys.
+
+### 3. Run the Application
+
+Using Maven:
+```Bash
+mvn clean spring-boot:run
+```
+**OR**
+
+Using Docker (Recommended):
+```Bash
+docker build -t shopsmart-backend .
+docker run -p 8080:8080 shopsmart-backend
+```
+
+## 🗺️ API Documentation (Postman)
+
+## 🔮 Future Improvements
+
+ <li>   Integrate Redis for caching frequently accessed products.
+
+ <li>   Implement Elasticsearch for advanced, fuzzy product search.
+
+ <li>   Add Swagger/OpenAPI for interactive API documentation.
+
+ <li>  Build CI/CD pipelines using GitHub Actions.
+
+ <li>   Deploy to AWS (ECR, ECS, RDS).
+
+ <li>   Payment gateway integration (Stripe/Razorpay).
+
+## 👨‍💻 Let's Connect
+
+This project is intended for portfolio purposes to showcase my backend engineering capabilities. If you're a recruiter or hiring manager, I'd love to chat!
+
+ <li>   LinkedIn: [Your LinkedIn URL here]
+
+ <li>   Email: [Your Email here]
