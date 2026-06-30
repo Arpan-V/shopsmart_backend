@@ -71,33 +71,36 @@ src/main/java/com/arpan/backend
 
 ---
 
+## 🗺️ API Documentation (Postman)
+
+---
+
 ## ⚙️ Getting Started
 
 ### Prerequisites
+
 * Java 26
-* Maven
 * PostgreSQL
 * Docker (Optional, for containerized run)
 
 ### 1. Clone the Repository
 ```bash
-git clone [https://github.com/arpan-v/shopsmart_backend.git](https://github.com/arpan-v/shopsmart_backend.git)
-cd shopsmart
+git clone https://github.com/arpan-v/shopsmart_backend.git
+cd shopsmart_backend
 ```
 ### 2. Environment Setup
 
 The application requires certain environment variables to run securely (Database URLs, JWT secrets, OAuth credentials).
 
-  1.  Create an application.properties or .env file in your root directory based on the provided example.
-
-  2.  Update the variables with your local database credentials and Google OAuth keys.
+**Export all the environment variables mentioned in `.env.example`**
 
 ### 3. Run the Application
 
-Using Maven:
+Run:
 ```Bash
-mvn clean spring-boot:run
+mvnw spring-boot:run
 ```
+
 **OR**
 
 Using Docker (Recommended):
@@ -106,7 +109,6 @@ docker build -t shopsmart-backend .
 docker run -p 8080:8080 shopsmart-backend
 ```
 
-## 🗺️ API Documentation (Postman)
 
 ## 🔮 Future Improvements
 
@@ -116,7 +118,7 @@ docker run -p 8080:8080 shopsmart-backend
 
    * Add Swagger/OpenAPI for interactive API documentation.
 
-   *Build CI/CD pipelines using GitHub Actions.
+   * Build CI/CD pipelines using GitHub Actions.
 
    * Deploy to AWS (ECR, ECS, RDS).
 
@@ -128,4 +130,4 @@ This project is intended for portfolio purposes to showcase my backend engineeri
 
    * LinkedIn: [Your LinkedIn URL here]
 
-   * Email: [Your Email here]
+   * Email: arpan24622@gmail.com
