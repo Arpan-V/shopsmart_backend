@@ -48,7 +48,7 @@ This project was built to simulate real-world backend development practices rath
 ## 🏗️ Architecture & Database Design
 
 The project follows a layered architecture (Controllers -> Services -> Repositories) separating concerns to keep the codebase maintainable. 
-
+```
 src/main/java/com/arpan/backend
 ├── controller 
 ├── dto 
@@ -62,6 +62,7 @@ src/main/java/com/arpan/backend
 ├── exception 
 ├── util 
 └── ShopSmartApplication
+```
 
 **Key Database Relationships:**
 * `User` ↔ `Cart` (One-to-One)
@@ -109,22 +110,22 @@ docker run -p 8080:8080 shopsmart-backend
 
 ## 🔮 Future Improvements
 
- <li>   Integrate Redis for caching frequently accessed products.
+   * Integrate Redis for caching frequently accessed products.
 
- <li>   Implement Elasticsearch for advanced, fuzzy product search.
+   * Implement Elasticsearch for advanced, fuzzy product search.
 
- <li>   Add Swagger/OpenAPI for interactive API documentation.
+   * Add Swagger/OpenAPI for interactive API documentation.
 
- <li>  Build CI/CD pipelines using GitHub Actions.
+   *Build CI/CD pipelines using GitHub Actions.
 
- <li>   Deploy to AWS (ECR, ECS, RDS).
+   * Deploy to AWS (ECR, ECS, RDS).
 
- <li>   Payment gateway integration (Stripe/Razorpay).
+   * Payment gateway integration (Stripe/Razorpay).
 
 ## 👨‍💻 Let's Connect
 
 This project is intended for portfolio purposes to showcase my backend engineering capabilities. If you're a recruiter or hiring manager, I'd love to chat!
 
- <li>   LinkedIn: [Your LinkedIn URL here]
+   * LinkedIn: [Your LinkedIn URL here]
 
- <li>   Email: [Your Email here]
+   * Email: [Your Email here]
