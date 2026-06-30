@@ -3,7 +3,7 @@
 [![Java](https://img.shields.io/badge/Java-26-orange.svg)](https://java.com/)
 [![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.x-brightgreen.svg)](https://spring.io/projects/spring-boot)
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-18-blue.svg)](https://www.postgresql.org/)
-[![Docker](https://img.shields.io/badge/Docker-Supported-blue.svg)](https://www.docker.com/)
+[![Docker](https://img.shields.io/badge/Docker-29.x-blue.svg)](https://www.docker.com/)
 
 A production-style Spring Boot e-commerce backend that demonstrates secure authentication, scalable REST API design, database optimization, and containerized deployment.
 
