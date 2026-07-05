@@ -73,6 +73,7 @@ src/main/java/com/arpan/backend
 
 ## 🗺️ API Documentation (Postman)
 
+* Swagger UI
 ---
 
 ## ⚙️ Getting Started
