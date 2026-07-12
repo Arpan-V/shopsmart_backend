@@ -31,7 +31,8 @@ This project was built to simulate real-world backend development practices rath
   * Persistent shopping cart management (One-to-One User/Cart relationship).
   * Global exception handling and robust request validation.
 
-* **DevOps & Deployment:** * Fully dockerized backend for easy environment setup.
+* **DevOps & Deployment:** 
+  * Fully dockerized backend for easy environment setup.
   * Environment variable-driven configuration.
 
 ---
