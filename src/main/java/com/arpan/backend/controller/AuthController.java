@@ -198,31 +198,7 @@ public class AuthController {
                 );
     }
 
-    @GetMapping("/verify")
-    public void verify(
-            @RequestParam String token,
-            HttpServletResponse response
-    ) throws IOException {
 
-        authService.verify(token);
-
-        response.sendRedirect(
-                frontendUrl + "/auth?verified=1"
-        );
-    }
-
-    @PostMapping("/resend-verification")
-    public ResponseEntity<ApiResponse<String>>
-    resendVerification(
-            @RequestParam String email
-    ) {
-
-        return ResponseEntity.ok(
-                ApiResponse.success(
-                        authService.resendVerification(email)
-                )
-        );
-    }
 
     /**
      * Private helper to ensure all security cookies

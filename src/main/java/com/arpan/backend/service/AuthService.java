@@ -10,8 +10,4 @@ public interface AuthService {
     ApiResponse<AuthResponse> login(LoginRequest request);
     ApiResponse<AuthResponse> refresh(String refreshToken);
     ApiResponse<String> logout(String refreshToken);
-
-    void verify(String token);
-
-    String resendVerification(String email);
 }

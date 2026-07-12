@@ -7,12 +7,10 @@ import com.arpan.backend.dto.auth.RegisterRequest;
 import com.arpan.backend.entity.AuthProvider;
 import com.arpan.backend.entity.RefreshToken;
 import com.arpan.backend.entity.Users;
-import com.arpan.backend.entity.VerificationToken;
 import com.arpan.backend.exception.AuthException;
 import com.arpan.backend.exception.ConflictException;
 import com.arpan.backend.repository.RefreshTokenRepository;
 import com.arpan.backend.repository.UserRepo;
-import com.arpan.backend.repository.VerificationTokenRepository;
 import com.arpan.backend.service.AuthService;
 
 import lombok.RequiredArgsConstructor;
@@ -20,7 +18,6 @@ import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -28,7 +25,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -46,15 +42,10 @@ public class AuthServiceImpl implements AuthService {
 
     private final CustomUserDetailsService userDetailsService;
 
-    private final VerificationTokenRepository verificationTokenRepository;
-
-    private final EmailService emailService;
 
     private static final Logger logger =
             LoggerFactory.getLogger(AuthServiceImpl.class);
 
-    @Value("${app.backend-url}")
-    private String backendUrl;
 
     @Override
     public ApiResponse<String> register(
@@ -103,42 +94,10 @@ public class AuthServiceImpl implements AuthService {
                         )
                         .role("ROLE_USER")
                         .provider(AuthProvider.LOCAL)
-                        .enabled(false)
+                        .enabled(true)
                         .build();
 
         userRepository.save(user);
-
-        String token =
-                UUID.randomUUID().toString();
-
-        VerificationToken verificationToken =
-                VerificationToken.builder()
-                        .token(token)
-                        .user(user)
-                        .expiryDate(
-                                LocalDateTime.now()
-                                        .plusHours(2)
-                        )
-                        .lastSentAt(
-                                LocalDateTime.now()
-                        )
-                        .build();
-
-        verificationTokenRepository.save(
-                verificationToken
-        );
-
-        String link =
-                backendUrl +
-                        "/api/auth/verify?token=" +
-                        token;
-
-        emailService.sendAlert(
-                user.getEmail(),
-                "Verify your account",
-                "Click the link to verify your account for ShopSmart:\n"
-                        + link
-        );
 
         return new ApiResponse<>(
                 true,
@@ -345,127 +304,5 @@ public class AuthServiceImpl implements AuthService {
         );
     }
 
-    @Override
-    public void verify(String token) {
 
-        VerificationToken verificationToken =
-                verificationTokenRepository.findByToken(
-                                token
-                        )
-                        .orElseThrow(() ->
-                                new RuntimeException(
-                                        "Invalid token"
-                                )
-                        );
-
-        if (
-                verificationToken.getExpiryDate()
-                        .isBefore(
-                                LocalDateTime.now()
-                        )
-        ) {
-
-            throw new RuntimeException(
-                    "Token expired"
-            );
-        }
-
-        Users user =
-                verificationToken.getUser();
-
-        user.setEnabled(true);
-
-        userRepository.save(user);
-    }
-
-    @Override
-    public String resendVerification(
-            String email
-    ) {
-
-        Users user =
-                userRepository.findByEmail(email)
-                        .orElseThrow(() ->
-                                new RuntimeException(
-                                        "User not found"
-                                )
-                        );
-
-        if (user.isEnabled()) {
-
-            throw new RuntimeException(
-                    "User already verified"
-            );
-        }
-
-        VerificationToken existingToken =
-                verificationTokenRepository.findByUser(user)
-                        .orElse(null);
-
-        if (
-                existingToken != null &&
-                        existingToken.getLastSentAt() != null
-        ) {
-
-            LocalDateTime now =
-                    LocalDateTime.now();
-
-            long diff =
-                    java.time.Duration.between(
-                            existingToken.getLastSentAt(),
-                            now
-                    ).toMillis();
-
-            if (diff < 1000 * 60 * 2) {
-
-                long remaining =
-                        (1000 * 60 * 2 - diff) / 1000;
-
-                throw new RuntimeException(
-                        "Please wait "
-                                + remaining
-                                + " seconds before requesting again"
-                );
-            }
-
-            verificationTokenRepository.findByUser(user)
-                    .ifPresent(
-                            verificationTokenRepository::delete
-                    );
-        }
-
-        String token =
-                UUID.randomUUID().toString();
-
-        VerificationToken verificationToken =
-                VerificationToken.builder()
-                        .token(token)
-                        .user(user)
-                        .expiryDate(
-                                LocalDateTime.now()
-                                        .plusHours(24)
-                        )
-                        .lastSentAt(
-                                LocalDateTime.now()
-                        )
-                        .build();
-
-        verificationTokenRepository.save(
-                verificationToken
-        );
-
-        String link =
-                backendUrl +
-                        "/api/auth/verify?token=" +
-                        token;
-
-        emailService.sendAlert(
-                user.getEmail(),
-                "Resend Verification",
-                "Click this link to verify your account:\n"
-                        + link
-        );
-
-        return "Verification email resent successfully";
-    }
 }
