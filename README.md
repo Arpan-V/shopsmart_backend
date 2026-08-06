@@ -125,11 +125,3 @@ docker run -p 8080:8080 shopsmart-backend
    * Deploy to AWS (ECR, ECS, RDS).
 
    * Payment gateway integration (Stripe/Razorpay).
-
-## 👨‍💻 Let's Connect
-
-This project is intended for portfolio purposes to showcase my backend engineering capabilities. If you're a recruiter or hiring manager, I'd love to chat!
-
-   * LinkedIn: [Your LinkedIn URL here]
-
-   * Email: arpan24622@gmail.com
